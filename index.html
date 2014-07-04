@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>MLOD4CON - Making Multilingual Linked Open Data Sources Accessible for Content Architects &amp; Content Creators</title>
+        <style type="text/css">
+            *.entity { color: green;}
+	    *.noentityid { color: salmon;}
+	    *.textarea {
+		position: fixed;
+		left: 70%; 
+		top: 15%;
+	    }
+	    h1 {
+		text-align: center;
+	    }
+	    *.main, *.main * {
+		width: 70%; 
+	    }
+	    pre {
+		padding: 3px 5px; border: 3px double;
+		background: #eee; overflow: auto;
+	    }
+	    *.clickme {
+		color: salmon;
+	    }
+	    code {
+		background-color: #eee;
+	    }
+	    *.ex {
+		padding: 3px 5px; border: 3px double; border-color: blue;
+	    }
+	    *.th * {
+		color: red;
+		text-align: center;
+	    }
+        </style>
+    </head>
+    <body onload="addClass();
+	    $.mlod4con.addListeners();"> 
+	<div class="main">
+	    <h1>MLOD4CON -<br>Making Multilingual Linked Open Data Sources Accessible for Content Architects &amp; Content Creators</h1>
+	    <h2 id="what">What?</h2>
+	    <p>MLOD4CON is a JavaScript library targeting two types of users:</p>
+	    <ul>
+		<li>Content architects: People setting up templates that combine multilingual linked data queries with markup templates. They need to know about what multilingual linked data sources are available for the type of content that will be created.</li>
+		<li>Content creators: people creating content. They need to tell content architects what type of queries they need and how the output should look like.</li>
+	    </ul>
+
+	    <p>The goal of MLOD4CON is to enable content creators to work with linked data sources - without knowing details about them. After being set up by a content architect, the content creator only needs to make a JavaScript call. MLOD4CON then generates markup, based on multilingual linked data structured information.</p>
+
+
+	    <h2 id="how">How?</h2>
+	    <p>Download the MLOD4CON files and add the following to your HTML document:</p>
+	    <pre>&lt;script src="jquery-1.11.1.min.js">&lt;/script>
+&lt;script src="mlod4consettings.json">&lt;/script>
+&lt;script src="mlod4con.js">&lt;/script></pre>
+	    <p>Also add the following textarea element. The generated markup will appear here:</p>
+	    <pre>&lt;textarea name="myfield" id="myfield" rows="20" cols="40">
+ Generated markup will appear here.&lt;/textarea></pre>
+	    <p>Add an identifier of an entity to an <code>its-ta-ident-ref</code> attribute (see <a href="#simple-usage">simple usage</a>). If interested you can <a href="http:///www.w3.org/TR/its20/#textanalysis-definition">learn more</a> about the attribute.</p>
+	    <p>For all examples, click on the <span class="entity">highlighted</span> <span class="noentityid">words</span> to generate the markup.</p>
+	    <h2 id="simple-usage">Simple usage</h2>
+	    <p>The content creator generates markup without any further parameters. MLOD4CON has a method <code>run()</code> to do this:</p>
+	    <p class="ex">Welcome to    
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Frankfurt" onclick="
+			$.mlod4con.run(this);">Frankfurt</span>, the home of
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Johann_Wolfgang_von_Goethe" onclick="
+			$.mlod4con.run(this);">Johann Wolfgang von Goethe</span>!</p>
+	    <p>Source code:</p>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Frankfurt"
+ onclick="$.mlod4con.run(this);">Frankfurt&lt;/span></pre>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Johann_Wolfgang_von_Goethe"
+ onclick="$.mlod4con.run(this);">Johann Wolfgang von Goethe&lt;/span></pre>
+	    <h2 id="richer-markup-templates">Generation using richer markup templates</h2>
+	    <p>The content creator chooses templates for the type of content. This is done via the <code>setMarkupTemplates</code> method. The order of templates given as a paramter is significant. The first template that completely matches to the query will be used. Example:</p>
+	    <p class="ex">Welcome to     
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Dublin" onclick="
+			$.mlod4con.setMarkupTemplates('Place-specific,Place-general');
+			$.mlod4con.run(this);">Dublin</span>, the home of
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Samuel_Beckett" onclick="
+			$.mlod4con.setMarkupTemplates('Person-specific,Person-general');
+			$.mlod4con.run(this);">Samuel Beckett</span>!</p>
+	    <p>Source code:</p>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Dublin"
+ onclick="
+  $.mlod4con.setMarkupTemplates('Place-specific,Place-general');
+  $.mlod4con.run(this);">Dublin&lt;/span></pre>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Samuel_Beckett"
+ onclick="
+  $.mlod4con.setMarkupTemplates('Person-specific,Person-general');
+  $.mlod4con.run(this);">Samuel Beckett&lt;/span></pre>
+	    <h2 id="multilingual-templates_different-output-formats">Generation with multilingual templates and different output formats</h2>
+	    <p>The content creator uses the <code>setLanguage</code> method to set language tag tests in queries and to set language specific templates. Via the <code>setOutputMarkupType</code> method three types can be set: Microdata ('0'), RDFa 1.1 Lite ('1'), JSON-LD ('2' but not yet implemented). Example:</p>
+	    <p class="ex">Willkommen in
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Dublin" onclick="
+			$.mlod4con.setLanguage('de');
+			$.mlod4con.setMarkupTemplates('Place-specific,Place-general');
+			$.mlod4con.setOutputMarkupType('1');
+			$.mlod4con.run(this);">Dublin</span>, der Heimat von
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Samuel_Beckett" onclick="
+			$.mlod4con.setLanguage('de');
+			$.mlod4con.setMarkupTemplates('Person-specific,Person-general');
+			$.mlod4con.setOutputMarkupType('1');
+			$.mlod4con.run(this);" id="myexample">Samuel Beckett</span>!</p>
+	    <p>Source code:</p>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Dublin"
+ onclick="
+  $.mlod4con.setLanguage('de');
+  $.mlod4con.setMarkupTemplates('Place-specific,Place-general');
+  $.mlod4con.setOutputMarkupType('1');
+  $.mlod4con.run(this);">Dublin&lt;/span></pre>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Samuel_Beckett"
+ onclick="
+  $.mlod4con.setLanguage('de');
+  $.mlod4con.setMarkupTemplates('Person-specific,Person-general');
+  $.mlod4con.setOutputMarkupType('1');
+  $.mlod4con.run(this);">Samuel Beckett&lt;/span></pre>
+	    <h2>Parameters without JS</h2>
+	    <p>All parameters for calling MLOD4CON can be set without JavaScript. The content author can also add a <code>data-mlod4con</code> attribute. It holds the parameters separated by semicolon. Example:</p>
+	    <p class="ex">Willkommen in
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Dublin"data-mlod4con="language='de';markupTemplates='Place-specific,Place-general';outputMarkupType='1';">Dublin</span>, der Heimat von
+		<span its-ta-ident-ref="http://dbpedia.org/resource/Samuel_Beckett" data-mlod4con="language='de';markupTemplates='Person-specific,Person-general';outputMarkupType='1';">Samuel Beckett</span>!</p> 
+	    <p>Source code:</p>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Dublin"
+ data-mlod4con=
+  "language='de';
+  markupTemplates='Place-specific,Place-general';
+  outputMarkupType='1';">Dublin&lt;/span></pre>
+	    <pre>&lt;span
+ its-ta-ident-ref="http://dbpedia.org/resource/Samuel_Beckett"
+ data-mlod4con=
+  "language='de';
+  markupTemplates='Person-specific,Person-general';
+  outputMarkupType='1';">Samuel Beckett&lt;/span></pre>	
+	    <h2 id="get-labels-for-entities">Get labels for entities</h2>   
+	    <p>If the content author does not know the entity URI, the <code>getEntityID</code> method can be used. It takes an element as input and generates markup for its content. Example:</p>
+	    <p class="ex">Welcome to <span onclick="
+		    $.mlod4con.getEntityID(this);" class="noentityid">Dublin</span>, the home of <span onclick="
+			    $.mlod4con.getEntityID(this);" class="noentityid">Samuel Beckett</span>!</p> 
+	    <p>Source code:</p>
+	    <pre>&lt;span
+ onclick="$.mlod4con.getEntityID(this);">Dublin&lt;/span>
+&lt;span
+ onclick="$.mlod4con.getEntityID(this);">Samuel Beckett&lt;/span></pre>
+	    <p>A form can be used to enter a string and look up the entity + generate markup. Example:</p>
+	    <p class="ex">Type some stuff and then <span onclick="$.mlod4con.form2Markup($('#inputtext'));" class="clickme">click here</span>!: <input name="inputtext" type="text" size="30" maxlength="30" id="inputtext" value="Dublin"></p>
+	    <p>Source code:</p>
+	    <pre>&lt;span
+ onclick="
+ $.mlod4con.form2Markup($('#inputtext'));">click here&lt;/span> ...
+ &lt;input id="inputtext">...</pre>
+
+	    <h2 id="settings-file">Settings file, to be prepared by the content architect</h2> 
+	    <p>The queries and the markup templates are defined in <a href="mlod4consettings.json">mlod4consettings.json</a>. Click on <span onclick="var html = $.mlod4con.generateHTML();
+		$('#settingstable').html(html);" style="color: red;">generate HTML</span> and a table with all settings will be shown below. 	    <span onclick="var xml = $.mlod4con.generateXML();
+		    console.log(xml);" style="color: blue;">generate XML</span> provides an XML version.</p>
+	    <p>Each query has:</p>
+	    <ul>
+		<li>a name, e.g. <code>dbpedia-query</code></li>
+		<li>a SPARQL endpoint, e.g.<br/><code>http://dbpedia.org/sparql?</code></li>
+		<li>the actual query string. During processing, the placeholder <code>@@@entity@@@</code> is filled with the entity given via the <code>its-ta-ident-ref</code> attribute.<br/>The query string must contain a <code>type</code> variable. This is used to match the markup template type. It can also contain other variables that are taken up in the markup templates.<br/>The query may also contain language tags. These are expressed with the placeholder <code>@@@language@@@</code>. </li>
+		<li>a reference to one or more markup templates. The order is significant: the first template matched will be used for generating markup.</li>
+	    </ul>
+	    <p></p>
+	    <p>Each markup template has:</p>
+	    <ul>
+		<li>a type, e.g. <code>person-general</code></li>
+		<li>a language. <a href="http://tools.ietf.org/html/bcp47">BCP 47</a> lookup is used to match the user language preference (given via the <code>setLanguage</code> method) to the language. If no language is given the default is used.</li>
+		<li>mappings. Here one or more types are given. The output of the query, i.e. the value of the <code>type</code> variable, is used for matching the type.</li>
+		<li>output in RDFa and Microdata (JSON-LD will follow). The output contains placeholders to be filled by variables, e.g. <code>##X##wikiPage##Y##</code> to be filled by value of the <code>wikiPage</code> variable. A template is only used if all variables can be filled.</li>
+	    </ul>
+	    <h2 id="what-next">What next</h2>
+	    <p>This is the first version of MLOD2CON. It provides only a small set of templates and relies soley on DBpedia as SPARQL endpoint. Future versions of MLOD2CON will:</p>
+	    <ul>
+		<li>Have more multilingual queries by default</li>
+		<li>Use more endpoints, in addition to DBpedia</li>
+		<li>Have more markup templates</li>
+		<li>What else? </li>
+	    </ul>
+	    <h2 id="contact">Contact</h2>
+	    <p>For questions, comments etc. contact <a href="mailto:fsasaki@w3.org">Felix Sasaki</a></p>
+	    <hr/>
+	    <p>Last modified: <script>document.write(document.lastModified);</script></p>
+	    <div id="settingstable"></div>
+	</div>
+	<div class="textarea" id="mytextarea">
+	    <p>Generated markup will appear here.<br/><span onclick="$('#myfield').toggle();" class="clickme">Click here</span> to hide &amp; show the textarea.</p>
+	<textarea name="myfield" id="myfield" rows="20" cols="40"></textarea>
+	</div>
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="mlod4consettings.json"></script>
+	<script src="mlod4con.js"></script>
+	<script type="text/javascript">
+		function addClass() {
+		    var entityElements = $("*[its-ta-ident-ref]");
+		    $("*[its-ta-ident-ref]").addClass("entity");
+		}
+	</script>
+    </body>
+</html>

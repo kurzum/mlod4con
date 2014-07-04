@@ -1,0 +1,98 @@
+var jsonObject =
+
+        {
+            "queries":
+                    [{
+                            "name": "dbpedia-query",
+                            "endpoint": "http://dbpedia.org/sparql?",
+                            "queryTemplate": "SELECT ?wikiPage ?type ?birthPlaceURI ?birthPlaceLabel ?lat ?long WHERE \n{ \n<@@@entity@@@> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?wikiPage. \n<@@@entity@@@> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type. OPTIONAL {<@@@entity@@@> <http://dbpedia.org/ontology/birthPlace> ?birthPlace.\n ?birthPlace <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?birthPlaceURI. \n?birthPlace <http://www.w3.org/2000/01/rdf-schema#label> ?birthPlaceLabel.\nFILTER(langMatches(lang(?birthPlaceLabel), '@@@language@@@'))}\n OPTIONAL {\n<@@@entity@@@> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.\n<@@@entity@@@> <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat. \n<@@@entity@@@> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long.}} ",
+                            "relevantTemplates": "Person-general, Place-general, Organisation-general, Book-general, Movie-general"
+                        },
+                        {
+                            "name": "dbpedia-person-query",
+                            "endpoint": "http://dbpedia.org/sparql?",
+                            "queryTemplate": "SELECT ?wikiPage ?type ?birthPlaceURI ?birthPlaceLabel WHERE \n{ \n<@@@entity@@@> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?wikiPage. \n<@@@entity@@@> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type. <@@@entity@@@> <http://dbpedia.org/ontology/birthPlace> ?birthPlace. ?birthPlace <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?birthPlaceURI. ?birthPlace <http://www.w3.org/2000/01/rdf-schema#label> ?birthPlaceLabel.\nFILTER(langMatches(lang(?birthPlaceLabel), '@@@language@@@'))} ",
+                            "relevantTemplates": "Person-specific"
+                        },
+                        {
+                            "name": "dbpedia-place-specifc-query",
+                            "endpoint": "http://dbpedia.org/sparql?",
+                            "queryTemplate": "SELECT ?wikiPage ?type ?lat ?long WHERE \n{ \n<@@@entity@@@> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?wikiPage. \n<@@@entity@@@> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.\n<@@@entity@@@> <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat. \n<@@@entity@@@> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long. } ",
+                            "relevantTemplates": "Place-specific"
+                        }
+                        ],
+            "outputMarkupTemplates":
+                    [{
+                            "type": "Person-general",
+                            "language": "",
+                            "mappings": ["http://dbpedia.org/ontology/Person", "http://schema.org/Person"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Place'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Person'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Place-general",
+                            "language": "",
+                            "mappings": ["http://dbpedia.org/ontology/Place", "http://schema.org/Place"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Place'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Place'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Person-specific",
+                            "language": "en",
+                            "mappings": ["http://dbpedia.org/ontology/Person", "http://schema.org/Person"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Person'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a> (born in <a href='##X##birthPlaceURI##Y##'>##X##birthPlaceLabel##Y##</a>)\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Person'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a> (born in <a href='##X##birthPlaceURI##Y##'>##X##birthPlaceLabel##Y##</a>)\n</span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Person-specific",
+                            "language": "de",
+                            "mappings": ["http://dbpedia.org/ontology/Person", "http://schema.org/Person"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Person'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a> (geboren in <a href='##X##birthPlaceURI##Y##'>##X##birthPlaceLabel##Y##</a>)\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Person'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a> (geboren in <a href='##X##birthPlaceURI##Y##'>##X##birthPlaceLabel##Y##</a>)\n</span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Place-specific",
+                            "language": "de",
+                            "mappings": ["http://dbpedia.org/ontology/Place", "http://schema.org/Place"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Place'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n (<span property='geo' typeof='GeoCoordinates'>Ortsangaben: Breitengrad: ##X##lat##Y## Längengrad: ##X##long##Y## <meta property='latitude' content='##X##lat##Y##' /> <meta property='longitude' content='##X##long##Y##' />\n </span>)\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Place'>\n <a itemprop='url' href='##X##wikiPage##Y##'>\n  <span itemprop='name' its-ta-ident-ref='@@@entityIdentifier@@@'>@@@content@@@</span>\n </a>\n (<span itemprop='geo' itemscope itemtype='http://schema.org/GeoCoordinates'>Ortsangaben: Breitengrad: ##X##lat##Y## Längengrad: ##X##long##Y## <meta itemprop='latitude' content='##X##lat##Y##' /> <meta itemprop='longitude' content='##X##long##Y##' />\n </span>)\n</span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Place-specific",
+                            "language": "en",
+                            "mappings": ["http://dbpedia.org/ontology/Place", "http://schema.org/Place"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Place'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n (<span property='geo' typeof='GeoCoordinates'>location info: Latitude: ##X##lat##Y## Longitude: ##X##long##Y## <meta property='latitude' content='##X##lat##Y##' /> <meta property='longitude' content='##X##long##Y##' />\n </span>)\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Place'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a>\n (<span itemprop='geo' itemscope itemtype='http://schema.org/GeoCoordinates'>location info: Latitude: ##X##lat##Y## Longitude: ##X##long##Y## <meta itemprop='latitude' content='##X##lat##Y##' /> <meta itemprop='longitude' content='##X##long##Y##' /></span></span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Organisation-general",
+                            "language": "",
+                            "mappings": ["http://schema.org/Organization"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Organisation'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Organization'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "jsonld": "tbd"
+                        },
+                        {
+                            "type": "Book-general",
+                            "language": "",
+                            "mappings": ["http://schema.org/Book", "http://purl.org/ontology/bibo/Book"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Book'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Book'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "jsonld": "tbd"
+                        },
+                         {
+                            "type": "Movie-general",
+                            "language": "",
+                            "mappings": ["http://schema.org/Movie", "http://dbpedia.org/ontology/Film"],
+                            "rdfa": "\n<span vocab='http://schema.org' typeof='Movie'>\n<a property='url' href='##X##wikiPage##Y##'>\n<span property='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "microdata": "\n<span itemscope='' itemtype='http://schema.org/Movie'>\n<a itemprop='url' href='##X##wikiPage##Y##'>\n<span itemprop='name'>@@@content@@@</span>\n</a>\n</span>",
+                            "jsonld": "tbd"
+                        }
+                    ]
+        }
